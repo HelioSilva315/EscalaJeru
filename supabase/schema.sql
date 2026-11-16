@@ -87,6 +87,7 @@ create table if not exists public.profiles (
   avatar_color text not null default '#2c5a4b' check (avatar_color ~ '^#[0-9a-fA-F]{6}$'),
   birth_date date check (birth_date is null or birth_date <= current_date),
   active boolean not null default true,
+  must_change_password boolean not null default false,
   notify_whatsapp boolean not null default true,
   notify_sms boolean not null default false,
   calendar_token uuid not null default gen_random_uuid(),
@@ -225,6 +226,17 @@ create table if not exists public.notification_log (
   detail text,
   created_at timestamptz not null default now()
 );
+
+create table if not exists public.password_change_log (
+  id uuid primary key default gen_random_uuid(),
+  profile_id uuid not null references public.profiles(id) on delete cascade,
+  changed_by uuid references public.profiles(id) on delete set null,
+  method text not null check (method in ('self', 'admin_reset', 'invite_activation')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists password_change_log_profile_idx
+  on public.password_change_log (profile_id, created_at desc);
 
 -- ---------------------------------------------------------------------
 --  Funções e triggers
@@ -563,6 +575,7 @@ alter table public.messages enable row level security;
 alter table public.channel_reads enable row level security;
 alter table public.notifications enable row level security;
 alter table public.notification_log enable row level security;
+alter table public.password_change_log enable row level security;
 
 -- profiles ------------------------------------------------------------
 drop policy if exists profiles_select on public.profiles;
@@ -693,6 +706,16 @@ create policy notification_log_leader on public.notification_log
   for select to authenticated
   using (public.is_leader());
 
+drop policy if exists password_change_log_select on public.password_change_log;
+create policy password_change_log_select on public.password_change_log
+  for select to authenticated
+  using (profile_id = auth.uid() or public.is_leader());
+
+drop policy if exists password_change_log_insert on public.password_change_log;
+create policy password_change_log_insert on public.password_change_log
+  for insert to authenticated
+  with check (profile_id = auth.uid() or public.is_leader());
+
 -- ---------------------------------------------------------------------
 --  Privilégios (PostgREST)
 -- ---------------------------------------------------------------------
@@ -709,6 +732,7 @@ grant select, insert, delete on public.messages to authenticated;
 grant select, insert, update, delete on public.channel_reads to authenticated;
 grant select, update on public.notifications to authenticated;
 grant select on public.notification_log to authenticated;
+grant select, insert on public.password_change_log to authenticated;
 
 -- O app precisa descobrir se é o primeiro acesso antes do login.
 revoke all on function public.needs_bootstrap() from public;

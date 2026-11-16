@@ -269,29 +269,6 @@ export default function Login() {
           <h1 className="auth-title">{titles[mode].title}</h1>
           <p className="auth-sub">{titles[mode].sub}</p>
 
-          {(mode === "login" || mode === "invite") && (
-            <div className="auth-tabs" role="tablist" aria-label="Formas de acesso">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={mode === "login"}
-                className={`auth-tab ${mode === "login" ? "active" : ""}`}
-                onClick={() => setMode("login")}
-              >
-                Entrar
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={mode === "invite"}
-                className={`auth-tab ${mode === "invite" ? "active" : ""}`}
-                onClick={() => setMode("invite")}
-              >
-                Tenho um convite
-              </button>
-            </div>
-          )}
-
           {mode === "login" && (
             <form className="auth-form" onSubmit={handleLogin} noValidate>
               <Field label="E-mail" htmlFor="login-email">

@@ -190,6 +190,7 @@ export async function updateMyProfile(patch: Partial<Person>): Promise<Person> {
     notify_whatsapp: patch.notify_whatsapp,
     notify_sms: patch.notify_sms,
     avatar_color: patch.avatar_color,
+    must_change_password: patch.must_change_password,
   };
   Object.keys(allowed).forEach((key) => {
     if (allowed[key as keyof typeof allowed] === undefined) {
@@ -204,6 +205,28 @@ export async function updateMyProfile(patch: Partial<Person>): Promise<Person> {
     .single();
   if (error) throw new Error(error.message);
   return data as Person;
+}
+
+export async function changePassword(newPassword: string): Promise<void> {
+  if (IS_DEMO) {
+    await demoApi.updateMyProfile({ must_change_password: false });
+    return;
+  }
+  const client = requireSupabase();
+  const { data: auth } = await client.auth.getUser();
+  if (!auth.user) throw new Error("Sessão expirada.");
+  const { error: authError } = await client.auth.updateUser({ password: newPassword });
+  if (authError) throw new Error(authError.message);
+  const { error: profileError } = await client
+    .from("profiles")
+    .update({ must_change_password: false })
+    .eq("id", auth.user.id);
+  if (profileError) throw new Error(profileError.message);
+  await client.from("password_change_log").insert({
+    profile_id: auth.user.id,
+    changed_by: auth.user.id,
+    method: "self",
+  });
 }
 
 /**
@@ -266,13 +289,13 @@ export async function createPerson(input: PersonInput): Promise<InviteResult> {
   });
 }
 
-export async function resendInvite(personId: string): Promise<string> {
+export async function resetPersonPassword(personId: string): Promise<string> {
   if (IS_DEMO) throw new Error("Indisponível na demonstração.");
-  const data = await invokeFunction<{ inviteCode: string }>("admin", {
-    action: "resend-invite",
+  const data = await invokeFunction<{ provisionalPassword: string }>("admin", {
+    action: "reset-password",
     personId,
   });
-  return data.inviteCode;
+  return data.provisionalPassword;
 }
 
 export async function updatePerson(

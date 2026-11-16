@@ -19,6 +19,7 @@ interface CreatePersonInput {
   role?: "leader" | "member";
   birth_date?: string | null;
   avatar_color?: string;
+  password?: string;
 }
 
 const AVATAR_COLORS = [
@@ -80,11 +81,12 @@ Deno.serve(async (request) => {
         input.avatar_color && /^#[0-9a-fA-F]{6}$/.test(input.avatar_color)
           ? input.avatar_color
           : AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+      const provisionalPassword = (input.password ?? "").trim() || randomPassword();
 
       const { data: created, error: createError } = await admin.auth.admin
         .createUser({
           email: loginEmail,
-          password: randomPassword(),
+          password: provisionalPassword,
           email_confirm: true,
           app_metadata: { invited: true, role, invited_by: leader.id },
           user_metadata: {
@@ -112,6 +114,7 @@ Deno.serve(async (request) => {
           avatar_color: color,
           role,
           active: true,
+          must_change_password: true,
         })
         .eq("id", profileId)
         .select("*")
@@ -122,28 +125,9 @@ Deno.serve(async (request) => {
         return fail(profileError?.message ?? "Perfil não pôde ser criado.", 500);
       }
 
-      // Invalida convites antigos não usados.
-      await admin
-        .from("invites")
-        .update({ revoked_at: new Date().toISOString() })
-        .eq("profile_id", profileId)
-        .is("used_at", null)
-        .is("revoked_at", null);
-
-      const code = inviteCode();
-      const { error: inviteError } = await admin.from("invites").insert({
-        profile_id: profileId,
-        code,
-        created_by: leader.id,
-      });
-
-      if (inviteError) {
-        return fail(inviteError.message, 500);
-      }
-
       return json({
         person: profile,
-        inviteCode: code,
+        provisionalPassword,
       });
     }
 
@@ -202,6 +186,27 @@ Deno.serve(async (request) => {
         });
       }
       return json({ ok: true });
+    }
+
+    if (action === "reset-password") {
+      const personId = String(body.personId ?? "");
+      if (!personId) return fail("Informe a pessoa.");
+
+      const { data: target } = await admin.auth.admin.getUserById(personId);
+      if (!target?.user) return fail("Pessoa não encontrada.", 404);
+
+      const provisionalPassword = randomPassword();
+      const { error: updateError } = await admin.auth.admin.updateUserById(personId, {
+        password: provisionalPassword,
+      });
+      if (updateError) return fail(updateError.message, 500);
+
+      await admin
+        .from("profiles")
+        .update({ must_change_password: true })
+        .eq("id", personId);
+
+      return json({ provisionalPassword });
     }
 
     return fail("Ação desconhecida.", 404);

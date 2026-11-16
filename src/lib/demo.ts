@@ -441,6 +441,7 @@ export const demoApi = {
       avatar_color: input.avatar_color || "#2c5a4b",
       birth_date: input.birth_date || null,
       active: true,
+      must_change_password: true,
       notify_whatsapp: true,
       notify_sms: false,
       calendar_token: `demo-token-${id}`,
@@ -448,7 +449,7 @@ export const demoApi = {
     };
     store.people.push(created);
     saveDemoStore();
-    return { person: created, inviteCode: `JERU${Math.random().toString(36).slice(2, 6).toUpperCase()}` };
+    return { person: created, provisionalPassword: "Temp" + Math.random().toString(36).slice(2, 8) };
   },
 
   async updatePerson(id: string, patch: Partial<Person>): Promise<Person> {

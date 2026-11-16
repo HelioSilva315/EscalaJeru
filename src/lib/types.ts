@@ -9,6 +9,7 @@ export interface Person {
   avatar_color: string;
   birth_date: string | null;
   active: boolean;
+  must_change_password?: boolean;
   notify_whatsapp: boolean;
   notify_sms: boolean;
   calendar_token: string;
@@ -144,5 +145,5 @@ export interface ScheduleInput {
 
 export interface InviteResult {
   person: Person;
-  inviteCode: string;
+  provisionalPassword: string;
 }

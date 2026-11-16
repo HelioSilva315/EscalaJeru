@@ -4,6 +4,7 @@ import { Icon } from "@/components/Icon";
 import { useAuth } from "@/context/AuthContext";
 import { APP_NAME, CHURCH_NAME, IS_DEMO } from "@/lib/config";
 import Login from "@/pages/Login";
+import ChangePassword from "@/pages/ChangePassword";
 import Dashboard from "@/pages/Dashboard";
 import Agenda from "@/pages/Agenda";
 import Schedules from "@/pages/Schedules";
@@ -128,6 +129,9 @@ function Protected() {
   if (user.role === "pending" || !user.active) {
     return <AccountHold active={Boolean(user.active)} />;
   }
+  if (user.must_change_password && location.pathname !== "/alterar-senha") {
+    return <Navigate to="/alterar-senha" replace />;
+  }
   return <Layout />;
 }
 
@@ -174,6 +178,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="agenda" element={<Agenda />} />
         <Route path="escalas" element={<Schedules />} />
+        <Route path="alterar-senha" element={<ChangePassword />} />
         <Route path="pessoas" element={<People />} />
         <Route path="ministerios" element={<Ministries />} />
         <Route path="chat" element={<Chat />} />

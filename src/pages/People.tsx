@@ -25,6 +25,7 @@ import {
   friendlyError,
   listPeople,
   listSchedules,
+  resetPersonPassword,
   roleLabel,
   updatePerson,
 } from "@/lib/api";
@@ -97,6 +98,7 @@ export default function People() {
 
   const [deactivateOpen, setDeactivateOpen] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
+  const [acting, setActing] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -170,6 +172,17 @@ export default function People() {
     setFormOpen(true);
   }
 
+  async function resetPassword(person: PersonLike) {
+    setActing(true);
+    try {
+      const password = await resetPersonPassword(person.id);
+      setInvite({ person: person as Person, provisionalPassword: password });
+    } catch (error) {
+      toast(friendlyError(error), "error");
+    } finally {
+      setActing(false);
+    }
+  }
   async function submit(event: FormEvent) {
     event.preventDefault();
     const input: PersonInput = {
@@ -375,12 +388,22 @@ export default function People() {
               <button className="btn btn-ghost" onClick={() => setDetail(null)}>
                 Fechar
               </button>
-              {isLeader && (
-                <button className="btn btn-primary" onClick={() => openEdit(detail)}>
-                  <Icon name="edit" />
-                  Editar cadastro
-                </button>
-              )}
+               {isLeader && (
+                 <>
+                   <button
+                     className="btn btn-secondary"
+                     onClick={() => void resetPassword(detail)}
+                     disabled={acting}
+                   >
+                     <Icon name="refresh" />
+                     Resetar senha
+                   </button>
+                   <button className="btn btn-primary" onClick={() => openEdit(detail)}>
+                     <Icon name="edit" />
+                     Editar cadastro
+                   </button>
+                 </>
+               )}
             </>
           ) : undefined
         }
@@ -649,10 +672,10 @@ export default function People() {
       <Modal
         open={Boolean(invite)}
         onClose={() => setInvite(null)}
-        title="Convite pronto"
+        title="Acesso criado"
         subtitle={
           invite
-            ? `Compartilhe com ${invite.person.full_name.split(" ")[0]} para ativar o acesso.`
+            ? `Compartilhe os dados com ${invite.person.full_name.split(" ")[0]} para o primeiro acesso.`
             : undefined
         }
         icon="userPlus"
@@ -684,31 +707,31 @@ export default function People() {
                 marginBottom: 6,
               }}
             >
-              <div className="detail-label">Código de convite</div>
+              <div className="detail-label">Senha provisória</div>
               <div
                 className="display mono"
                 style={{
-                  fontSize: 30,
+                  fontSize: 26,
                   fontWeight: 600,
-                  letterSpacing: "0.12em",
+                  letterSpacing: "0.06em",
                   marginTop: 4,
                 }}
               >
-                {invite.inviteCode}
+                {invite.provisionalPassword}
               </div>
               <div className="tiny faint" style={{ marginTop: 6 }}>
-                Válido por 7 dias · uso único
+                A pessoa deve trocar essa senha no primeiro acesso.
               </div>
             </div>
 
             <div className="row wrap" style={{ marginTop: 12 }}>
-              <CopyButton value={invite.inviteCode} label="Copiar código" />
+              <CopyButton value={invite.provisionalPassword} label="Copiar senha" />
               {invite.person.phone && (
                 <a
                   className="btn btn-primary"
                   href={whatsappLink(
                     invite.person.phone,
-                    `Olá, ${invite.person.full_name.split(" ")[0]}! Seu acesso ao EscalaJeru da Igreja JERU está pronto.\n\nCódigo: ${invite.inviteCode}\n\nAcesse ${window.location.origin}/login, toque em "Tenho um convite" e crie sua senha.`,
+                    `Olá, ${invite.person.full_name.split(" ")[0]}! Seu acesso ao EscalaJeru da Igreja JERU está pronto.\n\nE-mail: ${invite.person.email ?? "seu e-mail cadastrado"}\nSenha provisória: ${invite.provisionalPassword}\n\nAcesse ${window.location.origin}/login e troque a senha no primeiro acesso.`,
                   )}
                   target="_blank"
                   rel="noreferrer"
@@ -722,8 +745,8 @@ export default function People() {
             <div className="demo-card" style={{ marginTop: 16 }}>
               <Icon name="info" />
               <p>
-                O código aparece apenas uma vez. Se perder, cadastre a pessoa
-                novamente ou gere um novo convite na liderança.
+                A senha provisória aparece apenas uma vez. Se perder, use
+                “Resetar senha” no cadastro da pessoa.
               </p>
             </div>
 
