@@ -117,17 +117,7 @@ ol {
 }
 
 .rail {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 40;
-  width: var(--rail-w);
-  display: flex;
-  flex-direction: column;
-  padding: 26px 16px 18px;
-  background: var(--rail);
-  border-right: 1px solid var(--line);
-  overflow-y: auto;
-  scrollbar-width: thin;
+  display: none;
 }
 
 .brand {
@@ -315,23 +305,22 @@ ol {
 }
 
 .main {
-  margin-left: var(--rail-w);
-  padding: 34px 42px 90px;
+  margin-left: 0;
+  padding: 0 18px 104px;
   min-height: 100dvh;
+  max-width: 560px;
+  margin-inline: auto;
 }
 .content {
   width: 100%;
-  max-width: var(--content-w);
+  max-width: 100%;
   margin: 0 auto;
 }
-
-/* barra mobile */
 .mobilebar {
-  display: none;
+  display: flex;
 }
-
 .bottomnav {
-  display: none;
+  display: grid;
 }
 
 /* ---------------- Transições de tela ---------------- */
@@ -507,8 +496,8 @@ ol {
   .main {
     margin-left: 0;
     padding: 0 16px 104px;
-    max-width: 760px;
-    margin-inline: 0;
+    max-width: 560px;
+    margin-inline: auto;
   }
   .mobilebar {
     display: flex;

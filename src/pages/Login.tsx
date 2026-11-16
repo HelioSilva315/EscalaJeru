@@ -207,7 +207,7 @@ export default function Login() {
     },
     bootstrap: {
       title: "Comece por aqui",
-      sub: "Crie a conta do líder principal. Depois, os líderes cadastram os membros e formam os ministérios.",
+      sub: "Crie a conta do administrador principal. Depois, cadastre os líderes e membros.",
     },
     invite: {
       title: "Ative seu convite",
@@ -224,7 +224,7 @@ export default function Login() {
       <aside className="auth-aside">
         <div className="auth-brand">
           <div className="brand-mark" aria-hidden="true">
-            J
+            <img src="/icons/logo.png" alt="" width={40} height={40} />
           </div>
           <div>
             <div className="auth-brand-name">{APP_NAME}</div>
@@ -248,7 +248,9 @@ export default function Login() {
       <main className="auth-main">
         <div className="auth-card">
           <div className="auth-mobile-brand">
-            <div className="brand-mark">J</div>
+            <div className="brand-mark">
+              <img src="/icons/logo.png" alt="" width={34} height={34} />
+            </div>
             <div>
               <div className="brand-name">{APP_NAME}</div>
               <div className="brand-sub">{CHURCH_NAME}</div>
@@ -420,7 +422,7 @@ export default function Login() {
                 style={{ marginTop: 18 }}
                 disabled={busy}
               >
-                {busy ? <span className="spinner" /> : "Criar conta de líder"}
+                {busy ? <span className="spinner" /> : "Criar conta de administrador"}
               </button>
 
               <div className="auth-links">
@@ -562,15 +564,7 @@ export default function Login() {
                     onClick={() => void demoEnter("p-ana")}
                     disabled={busy}
                   >
-                    Entrar como líder
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => void demoEnter("p-mariana")}
-                    disabled={busy}
-                  >
-                    Ver como membro
+                    Entrar na demonstração
                   </button>
                 </div>
               </div>

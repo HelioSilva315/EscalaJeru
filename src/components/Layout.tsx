@@ -48,7 +48,7 @@ function Brand({ compact }: { compact?: boolean }) {
   return (
     <div className="brand">
       <div className="brand-mark" aria-hidden="true">
-        J
+        <img src="/icons/logo.png" alt="" width={compact ? 26 : 30} height={compact ? 26 : 30} />
       </div>
       <div className="brand-text">
         <div className="brand-name">{APP_NAME}</div>
