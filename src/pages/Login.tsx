@@ -6,7 +6,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
   acceptInvite,
-  demoSignIn,
   friendlyError,
   IS_DEMO,
   needsBootstrap,
@@ -186,20 +185,6 @@ export default function Login() {
     }
   }
 
-  async function demoEnter(persona: string) {
-    setBusy(true);
-    setError("");
-    try {
-      await demoSignIn(persona);
-      await refreshUser();
-      navigate("/", { replace: true });
-    } catch (err) {
-      setError(friendlyError(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
   const titles: Record<Mode, { title: string; sub: string }> = {
     login: {
       title: "Bem-vindo de volta",
@@ -315,15 +300,7 @@ export default function Login() {
                 >
                   Esqueci minha senha
                 </button>
-                <button
-                  type="button"
-                  className="link"
-                  style={{ background: "none" }}
-                  onClick={() => setMode("invite")}
-                >
-                  Ativar convite
-                </button>
-              </div>
+                </div>
             </form>
           )}
 
@@ -524,28 +501,6 @@ export default function Login() {
                 </button>
               </div>
             </form>
-          )}
-
-          {IS_DEMO && (
-            <div className="demo-card">
-              <Icon name="sparkle" />
-              <div>
-                <p>
-                  <strong>Modo demonstração.</strong> Navegue com dados de exemplo.
-                  Nada é enviado para servidores.
-                </p>
-                <div className="row wrap" style={{ marginTop: 8 }}>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={() => void demoEnter("p-ana")}
-                    disabled={busy}
-                  >
-                    Entrar na demonstração
-                  </button>
-                </div>
-              </div>
-            </div>
           )}
 
           <p className="auth-note">

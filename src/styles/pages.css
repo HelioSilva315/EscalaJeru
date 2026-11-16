@@ -112,7 +112,7 @@
   animation: pageIn 0.45s var(--ease) both;
 }
 .auth-mobile-brand {
-  display: none;
+  display: flex;
 }
 .auth-title {
   font-family: var(--font-display);
