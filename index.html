@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#234a3e" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Escalas, agenda e comunicação da Igreja JERU em um só lugar." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="EscalaJeru" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="EscalaJeru" />
+    <meta property="og:title" content="EscalaJeru" />
+    <meta property="og:description" content="Escalas, agenda e comunicação da Igreja JERU em um só lugar." />
+    <meta property="og:type" content="website" />
+    <title>EscalaJeru</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/favicon-32.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <script src="/theme.js"></script>
+    <style>
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #f6f3ec;
+        z-index: 9999;
+        transition: opacity 0.35s ease;
+        font-family: Georgia, "Times New Roman", serif;
+        color: #234a3e;
+      }
+      #boot.gone { opacity: 0; pointer-events: none; }
+      #boot .b-mark {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: #234a3e;
+        color: #f6f3ec;
+        display: grid;
+        place-items: center;
+        font-size: 27px;
+        margin: 0 auto 14px;
+      }
+      #boot .b-name { font-size: 22px; letter-spacing: -0.02em; text-align: center; }
+      #boot .b-sub {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        text-align: center;
+        margin-top: 5px;
+        opacity: 0.55;
+      }
+      html[data-theme="dark"] #boot { background: #121815; color: #e9ece4; }
+      html[data-theme="dark"] #boot .b-mark { background: #e9ece4; color: #234a3e; }
+      @media (prefers-reduced-motion: reduce) {
+        #boot { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="boot" aria-hidden="true">
+      <div>
+        <div class="b-mark">J</div>
+        <div class="b-name">EscalaJeru</div>
+        <div class="b-sub">Igreja JERU</div>
+      </div>
+    </div>
+    <div id="root"></div>
+    <noscript>
+      <p style="padding: 24px; font-family: system-ui, sans-serif">
+        O EscalaJeru precisa de JavaScript para funcionar. Ative o JavaScript no seu navegador.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

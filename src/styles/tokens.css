@@ -1,0 +1,110 @@
+/* ============================================================
+   EscalaJeru — tokens
+   Paleta "papel e pinho": quente, sóbria, sem gradientes genéricos.
+   ============================================================ */
+:root {
+  /* superfícies */
+  --paper: #f6f3ec;
+  --rail: #f2eee5;
+  --surface: #fffdf8;
+  --surface-2: #f0ece2;
+  --field: #fffdf8;
+
+  /* texto */
+  --ink: #1b2a24;
+  --ink-2: #43554c;
+  --muted: #73837b;
+  --faint: #9aa79f;
+
+  /* linhas */
+  --line: #e4ded1;
+  --line-strong: #d3cbbb;
+
+  /* marca */
+  --pine: #2c5a4b;
+  --pine-dark: #204538;
+  --pine-soft: #e6eee8;
+  --pine-ink: #1d4034;
+
+  --clay: #b96f4e;
+  --clay-soft: #f7e8df;
+  --clay-ink: #7c4128;
+
+  --gold: #9b7a3f;
+  --gold-soft: #f4ecda;
+
+  --blue: #4c6d88;
+  --blue-soft: #e8eef4;
+
+  --plum: #77556f;
+  --plum-soft: #f1e9ef;
+
+  --danger: #a24a44;
+  --danger-soft: #f8e9e7;
+  --success: #377257;
+  --success-soft: #e5f0e9;
+
+  /* efeitos */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-xs: 9px;
+  --shadow-sm: 0 1px 2px rgba(27, 42, 36, 0.04);
+  --shadow-md: 0 1px 2px rgba(27, 42, 36, 0.04), 0 14px 32px -22px rgba(27, 42, 36, 0.34);
+  --shadow-lg: 0 24px 60px -28px rgba(20, 32, 26, 0.4);
+  --ring: 0 0 0 3px rgba(44, 90, 75, 0.16);
+  --ring-danger: 0 0 0 3px rgba(162, 74, 68, 0.14);
+
+  --font-display: "Fraunces Variable", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --ease: cubic-bezier(0.22, 0.71, 0.3, 1);
+  --dur: 0.22s;
+
+  --rail-w: 264px;
+  --content-w: 1140px;
+}
+
+html[data-theme="dark"] {
+  --paper: #111713;
+  --rail: #151c18;
+  --surface: #19211d;
+  --surface-2: #1f2924;
+  --field: #1b2420;
+
+  --ink: #e9ece4;
+  --ink-2: #c2ccc4;
+  --muted: #93a199;
+  --faint: #74837b;
+
+  --line: #2a352f;
+  --line-strong: #39463f;
+
+  --pine: #8dbda6;
+  --pine-dark: #a5cdb9;
+  --pine-soft: #1e2f27;
+  --pine-ink: #d4e8dd;
+
+  --clay: #d18f6d;
+  --clay-soft: #2e211a;
+  --clay-ink: #f0c3ab;
+
+  --gold: #c8a86b;
+  --gold-soft: #2b2519;
+
+  --blue: #8fadc6;
+  --blue-soft: #1d2831;
+
+  --plum: #b595ad;
+  --plum-soft: #2a2128;
+
+  --danger: #e0918b;
+  --danger-soft: #2f1e1d;
+  --success: #86c3a5;
+  --success-soft: #17291f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.24), 0 18px 36px -24px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
+  --ring: 0 0 0 3px rgba(141, 189, 166, 0.2);
+  --ring-danger: 0 0 0 3px rgba(224, 145, 139, 0.18);
+}
