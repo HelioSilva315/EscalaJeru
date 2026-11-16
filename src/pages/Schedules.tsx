@@ -742,6 +742,11 @@ export default function Schedules() {
                       {person.full_name}
                     </span>
                     <span className="tiny faint" style={{ display: "block" }}>
+                      {person.role === "leader" && (
+                        <span className="role-tag" style={{ marginRight: 6 }}>
+                          Líder
+                        </span>
+                      )}
                       {inTeam
                         ? "Já está nesta equipe"
                         : conflict
