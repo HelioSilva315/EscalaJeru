@@ -710,6 +710,33 @@ export const demoApi = {
     saveDemoStore();
   },
 
+  async replaceSchedulePerson(id: string, profileId: string): Promise<void> {
+    const store = demoStore();
+    const schedule = store.schedules.find((s) => s.id === id);
+    if (!schedule) throw new Error("Escala não encontrada.");
+    const event = store.events.find((e) => e.id === schedule.event_id);
+    if (!event) throw new Error("Encontro não encontrado.");
+    const person = store.people.find((p) => p.id === profileId && p.active);
+    if (!person) throw new Error("Pessoa indisponível.");
+    const conflict = store.schedules.find(
+      (s) =>
+        s.id !== id &&
+        s.profile_id === profileId &&
+        s.event_date === event.event_date &&
+        s.status !== "declined",
+    );
+    if (conflict) {
+      const other = store.ministries.find((m) => m.id === conflict.ministry_id);
+      throw new Error(
+        `${person.full_name.split(" ")[0]} já está escalado(a) em ${other?.name || "outro ministério"} neste dia.`,
+      );
+    }
+    schedule.profile_id = profileId;
+    schedule.status = "pending";
+    schedule.notified_at = null;
+    saveDemoStore();
+  },
+
   async respondSchedule(id: string, status: ScheduleStatus): Promise<void> {
     const store = demoStore();
     const schedule = store.schedules.find((s) => s.id === id);

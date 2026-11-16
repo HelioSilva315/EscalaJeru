@@ -513,6 +513,18 @@ export async function createSchedule(input: {
   return data as Schedule;
 }
 
+export async function replaceSchedulePerson(
+  id: string,
+  profileId: string,
+): Promise<void> {
+  if (IS_DEMO) return demoApi.replaceSchedulePerson(id, profileId);
+  const client = requireSupabase();
+  const { error } = await client
+    .from("schedules")
+    .update({ profile_id: profileId, status: "pending", notified_at: null })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
 export async function deleteSchedule(id: string): Promise<void> {
   if (IS_DEMO) return demoApi.deleteSchedule(id);
   const client = requireSupabase();

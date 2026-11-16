@@ -23,6 +23,7 @@ import {
   listEvents,
   listSchedules,
   notifySchedules,
+  replaceSchedulePerson,
   respondSchedule,
   setScheduleStatus,
   subscribeToSchedules,
@@ -68,6 +69,8 @@ export default function Schedules() {
 
   const [removeTarget, setRemoveTarget] = useState<ScheduleWithRelations | null>(null);
   const [removing, setRemoving] = useState(false);
+  const [replaceId, setReplaceId] = useState("");
+  const [replacing, setReplacing] = useState(false);
 
   const [notifying, setNotifying] = useState<string | null>(null);
 
@@ -123,6 +126,10 @@ export default function Schedules() {
   }, [loading, searchParams, isLeader, openAssign, setSearchParams]);
 
   const selectedEvent = events.find((event) => event.id === assignEventId);
+
+  useEffect(() => {
+    setReplaceId("");
+  }, [detail]);
 
   const dayConflicts = useMemo(() => {
     if (!selectedEvent) return new Map<string, ScheduleWithRelations>();
@@ -248,6 +255,22 @@ export default function Schedules() {
       toast(friendlyError(error), "error");
     } finally {
       setActing(false);
+    }
+  }
+
+  async function replaceMember() {
+    if (!detail || !replaceId) return;
+    setReplacing(true);
+    try {
+      await replaceSchedulePerson(detail.id, replaceId);
+      toast("Membro substituído na escala.", "success");
+      setDetail(null);
+      setReplaceId("");
+      await load();
+    } catch (error) {
+      toast(friendlyError(error), "error");
+    } finally {
+      setReplacing(false);
     }
   }
 
@@ -837,6 +860,50 @@ export default function Schedules() {
                 {detail.event?.title} · {detail.event?.location}
               </div>
             </div>
+
+            {isLeader && (
+              <div className="detail-block">
+                <div className="detail-label">Substituir membro</div>
+                <div className="row" style={{ gap: 8, marginTop: 6 }}>
+                  <select
+                    className="select"
+                    value={replaceId}
+                    onChange={(event) => setReplaceId(event.target.value)}
+                    style={{ flex: 1 }}
+                  >
+                    <option value="">Escolha o novo membro</option>
+                    {directory
+                      .filter((person) => {
+                        if (person.id === detail.profile_id) return false;
+                        const alreadyScheduled = schedules.some(
+                          (schedule) =>
+                            schedule.event_date === detail.event_date &&
+                            schedule.status !== "declined" &&
+                            schedule.profile_id === person.id &&
+                            schedule.id !== detail.id,
+                        );
+                        return !alreadyScheduled;
+                      })
+                      .map((person) => (
+                        <option key={person.id} value={person.id}>
+                          {person.full_name}
+                        </option>
+                      ))}
+                  </select>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => void replaceMember()}
+                    disabled={!replaceId || replacing}
+                  >
+                    {replacing ? <span className="spinner" /> : <Icon name="refresh" />}
+                    Substituir
+                  </button>
+                </div>
+                <div className="tiny faint" style={{ marginTop: 6 }}>
+                  A pessoa escolhida não pode já estar escalada neste dia.
+                </div>
+              </div>
+            )}
 
             <div className="form-actions" style={{ flexWrap: "wrap" }}>
               <button className="btn btn-ghost" onClick={() => setDetail(null)}>
