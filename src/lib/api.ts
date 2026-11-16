@@ -519,11 +519,53 @@ export async function replaceSchedulePerson(
 ): Promise<void> {
   if (IS_DEMO) return demoApi.replaceSchedulePerson(id, profileId);
   const client = requireSupabase();
+  const { data: auth } = await client.auth.getUser();
+
+  const { data: old } = await client
+    .from("schedules")
+    .select("profile_id, event_id, ministry_id, event:events(title, event_date, start_time), ministry:ministries(name)")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await client
     .from("schedules")
     .update({ profile_id: profileId, status: "pending", notified_at: null })
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  const event = (old as { event?: { title?: string; event_date?: string; start_time?: string } } | null)?.event;
+  const ministry = (old as { ministry?: { name?: string } } | null)?.ministry;
+
+  // Avisa o novo membro dentro do app.
+  try {
+    await client.from("notifications").insert({
+      profile_id: profileId,
+      title: "Você foi escalado(a) em " + (ministry?.name ?? "um ministério"),
+      body:
+        (event?.title ?? "Encontro") +
+        " · " +
+        (event?.event_date ?? "") +
+        " às " +
+        (event?.start_time?.slice(0, 5) ?? ""),
+      link: "/escalas",
+    });
+  } catch {
+    /* silencioso */
+  }
+
+  // Registra o histórico da substituição.
+  try {
+    await client.from("schedule_substitutions").insert({
+      schedule_id: id,
+      event_id: (old as { event_id?: string } | null)?.event_id ?? null,
+      ministry_id: (old as { ministry_id?: string } | null)?.ministry_id ?? null,
+      old_profile_id: (old as { profile_id?: string } | null)?.profile_id ?? null,
+      new_profile_id: profileId,
+      changed_by: auth?.user?.id ?? null,
+    });
+  } catch {
+    /* silencioso */
+  }
 }
 export async function deleteSchedule(id: string): Promise<void> {
   if (IS_DEMO) return demoApi.deleteSchedule(id);

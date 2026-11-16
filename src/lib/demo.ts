@@ -734,6 +734,17 @@ export const demoApi = {
     schedule.profile_id = profileId;
     schedule.status = "pending";
     schedule.notified_at = null;
+    const evt = store.events.find((e) => e.id === schedule.event_id);
+    const ministry = store.ministries.find((m) => m.id === schedule.ministry_id);
+    store.notifications.push({
+      id: `n-${Date.now().toString(36)}`,
+      profile_id: profileId,
+      title: `Você foi escalado(a) em ${ministry?.name ?? "um ministério"}`,
+      body: `${evt?.title ?? "Encontro"} · ${evt?.event_date ?? ""}`,
+      link: "/escalas",
+      read_at: null,
+      created_at: new Date().toISOString(),
+    });
     saveDemoStore();
   },
 

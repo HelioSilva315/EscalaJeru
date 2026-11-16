@@ -227,6 +227,20 @@ create table if not exists public.notification_log (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.schedule_substitutions (
+  id uuid primary key default gen_random_uuid(),
+  schedule_id uuid references public.schedules(id) on delete cascade,
+  event_id uuid references public.events(id) on delete set null,
+  ministry_id uuid references public.ministries(id) on delete set null,
+  old_profile_id uuid references public.profiles(id) on delete set null,
+  new_profile_id uuid references public.profiles(id) on delete set null,
+  changed_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists schedule_substitutions_event_idx
+  on public.schedule_substitutions (event_id, created_at desc);
+
 create table if not exists public.password_change_log (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references public.profiles(id) on delete cascade,
@@ -576,6 +590,7 @@ alter table public.channel_reads enable row level security;
 alter table public.notifications enable row level security;
 alter table public.notification_log enable row level security;
 alter table public.password_change_log enable row level security;
+alter table public.schedule_substitutions enable row level security;
 
 -- profiles ------------------------------------------------------------
 drop policy if exists profiles_select on public.profiles;
@@ -716,6 +731,27 @@ create policy password_change_log_insert on public.password_change_log
   for insert to authenticated
   with check (profile_id = auth.uid() or public.is_leader());
 
+-- schedule_substitutions
+drop policy if exists schedule_substitutions_select on public.schedule_substitutions;
+create policy schedule_substitutions_select on public.schedule_substitutions
+  for select to authenticated
+  using (
+    public.is_leader()
+    or old_profile_id = auth.uid()
+    or new_profile_id = auth.uid()
+  );
+
+drop policy if exists schedule_substitutions_insert on public.schedule_substitutions;
+create policy schedule_substitutions_insert on public.schedule_substitutions
+  for insert to authenticated
+  with check (public.is_leader());
+
+-- notifications: líderes podem criar avisos (para substituições)
+drop policy if exists notifications_insert_leader on public.notifications;
+create policy notifications_insert_leader on public.notifications
+  for insert to authenticated
+  with check (public.is_leader());
+
 -- ---------------------------------------------------------------------
 --  Privilégios (PostgREST)
 -- ---------------------------------------------------------------------
@@ -733,6 +769,8 @@ grant select, insert, update, delete on public.channel_reads to authenticated;
 grant select, update on public.notifications to authenticated;
 grant select on public.notification_log to authenticated;
 grant select, insert on public.password_change_log to authenticated;
+grant select, insert on public.schedule_substitutions to authenticated;
+grant select, insert on public.schedule_substitutions to authenticated;
 
 -- O app precisa descobrir se é o primeiro acesso antes do login.
 revoke all on function public.needs_bootstrap() from public;
