@@ -27,7 +27,6 @@ grupos de WhatsApp perdidos.
 - ✅ Uma pessoa serve em **apenas um ministério por dia**.
 - ✅ **Só líderes** cadastram e escalam.
 - ✅ **Telefone obrigatório** para receber os avisos.
-- ✅ Primeiro acesso vira **administrador**; demais entram por convite.
 
 ## Segurança
 
