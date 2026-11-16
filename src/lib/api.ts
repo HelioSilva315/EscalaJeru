@@ -677,17 +677,22 @@ export function subscribeToMessages(
 
 export function subscribeToSchedules(callback: () => void): () => void {
   if (IS_DEMO || !supabase) return () => undefined;
-  const channel = supabase
-    .channel("schedules-realtime")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "schedules" },
-      () => callback(),
-    )
-    .subscribe();
-  return () => {
-    void supabase?.removeChannel(channel);
-  };
+  try {
+    const channel = supabase
+      .channel(`schedules-realtime-${Math.random().toString(36).slice(2)}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "schedules" },
+        () => callback(),
+      )
+      .subscribe();
+    return () => {
+      void supabase?.removeChannel(channel);
+    };
+  } catch (error) {
+    console.error("subscribeToSchedules:", error);
+    return () => undefined;
+  }
 }
 
 /* ------------------------------------------------------------------ */
