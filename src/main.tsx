@@ -35,7 +35,27 @@ createRoot(container).render(
   </StrictMode>,
 );
 
-registerSW({ immediate: true });
+registerSW({
+  immediate: true,
+  onRegisteredSW(_swUrl, registration) {
+    if (!registration) return;
+    const checkForUpdate = () => {
+      void registration.update().catch(() => undefined);
+    };
+    window.setInterval(checkForUpdate, 60 * 60 * 1000);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") checkForUpdate();
+    });
+  },
+});
+
+const hadController = navigator.serviceWorker.controller !== null;
+let reloading = false;
+navigator.serviceWorker.addEventListener("controllerchange", () => {
+  if (reloading || !hadController) return;
+  reloading = true;
+  window.location.reload();
+});
 
 const boot = document.getElementById("boot");
 if (boot) {
