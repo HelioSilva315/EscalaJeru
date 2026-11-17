@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Icon } from "@/components/Icon";
 import {
   Avatar,
@@ -99,6 +99,12 @@ export default function People() {
   const [deactivateOpen, setDeactivateOpen] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
   const [acting, setActing] = useState(false);
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const roleRef = useRef<HTMLSelectElement>(null);
+  const birthRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     try {
@@ -570,6 +576,7 @@ export default function People() {
           >
             <input
               id="person-name"
+              ref={nameRef}
               className="input"
               defaultValue={form.full_name}
               onChange={(event) =>
@@ -590,13 +597,17 @@ export default function People() {
             >
               <input
                 id="person-phone"
+                ref={phoneRef}
                 className="input"
                 type="tel"
                 inputMode="tel"
                 defaultValue={form.phone}
-                onChange={(event) =>
-                  setForm({ ...form, phone: maskPhoneInput(event.target.value) })
-                }
+                onChange={(event) => {
+                  const raw = event.target.value;
+                  const masked = maskPhoneInput(raw);
+                  phoneRef.current!.value = masked;
+                  setForm({ ...form, phone: masked });
+                }}
                 placeholder="(11) 91234-5678"
                 autoComplete="tel"
               />
@@ -609,12 +620,14 @@ export default function People() {
             >
               <input
                 id="person-email"
+                ref={emailRef}
                 className="input"
                 type="email"
                 defaultValue={form.email}
-                onChange={(event) =>
-                  setForm({ ...form, email: event.target.value })
-                }
+                onChange={(event) => {
+                  emailRef.current!.value = event.target.value;
+                  setForm({ ...form, email: event.target.value });
+                }}
                 placeholder="pessoa@email.com"
                 autoComplete="email"
               />
@@ -622,14 +635,16 @@ export default function People() {
             <Field label="Função" error={errors.role} htmlFor="person-role">
               <select
                 id="person-role"
+                ref={roleRef}
                 className="select"
                 defaultValue={form.role}
-                onChange={(event) =>
+                onChange={(event) => {
+                  roleRef.current!.value = event.target.value;
                   setForm({
                     ...form,
                     role: event.target.value as "leader" | "member",
-                  })
-                }
+                  });
+                }}
               >
                 <option value="member">Membro</option>
                 <option value="leader">Líder</option>
@@ -643,12 +658,14 @@ export default function People() {
             >
               <input
                 id="person-birth"
+                ref={birthRef}
                 className="input"
                 type="date"
                 defaultValue={form.birth_date}
-                onChange={(event) =>
-                  setForm({ ...form, birth_date: event.target.value })
-                }
+                onChange={(event) => {
+                  birthRef.current!.value = event.target.value;
+                  setForm({ ...form, birth_date: event.target.value });
+                }}
               />
             </Field>
           </div>
