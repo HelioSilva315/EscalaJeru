@@ -571,7 +571,7 @@ export default function People() {
             <input
               id="person-name"
               className="input"
-              value={form.full_name}
+              defaultValue={form.full_name}
               onChange={(event) =>
                 setForm({ ...form, full_name: event.target.value })
               }
@@ -593,7 +593,7 @@ export default function People() {
                 className="input"
                 type="tel"
                 inputMode="tel"
-                value={form.phone}
+                defaultValue={form.phone}
                 onChange={(event) =>
                   setForm({ ...form, phone: maskPhoneInput(event.target.value) })
                 }
@@ -611,7 +611,7 @@ export default function People() {
                 id="person-email"
                 className="input"
                 type="email"
-                value={form.email}
+                defaultValue={form.email}
                 onChange={(event) =>
                   setForm({ ...form, email: event.target.value })
                 }
@@ -623,7 +623,7 @@ export default function People() {
               <select
                 id="person-role"
                 className="select"
-                value={form.role}
+                defaultValue={form.role}
                 onChange={(event) =>
                   setForm({
                     ...form,
@@ -645,7 +645,7 @@ export default function People() {
                 id="person-birth"
                 className="input"
                 type="date"
-                value={form.birth_date}
+                defaultValue={form.birth_date}
                 onChange={(event) =>
                   setForm({ ...form, birth_date: event.target.value })
                 }
@@ -657,9 +657,8 @@ export default function People() {
             <div className="demo-card" style={{ marginTop: 18 }}>
               <Icon name="shield" />
               <p>
-                Ao cadastrar, geramos um <strong>código de convite</strong> de uso
-                único. A pessoa entra em “Tenho um convite”, cria a senha e já
-                começa a usar o app.
+                A senha provisória será gerada após o cadastro e aparece apenas
+                uma vez. Compartilhe com a pessoa para o primeiro acesso.
               </p>
             </div>
           )}
